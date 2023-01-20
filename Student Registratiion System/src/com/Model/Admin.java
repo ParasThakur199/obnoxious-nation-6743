@@ -1,5 +1,7 @@
 package com.Model;
 
+import java.util.Objects;
+
 public class Admin {
 	private String name;
 	private String password;
@@ -28,6 +30,23 @@ public class Admin {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, password);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Admin other = (Admin) obj;
+		return Objects.equals(name, other.name) && Objects.equals(password, other.password);
 	}
 
 	@Override
