@@ -5,9 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
+import com.Model.Admin;
 import com.Model.BatchRecordDTO;
+import com.Model.BatchSeatDTO;
 import com.Model.Course;
 import com.Model.Student;
 import com.Utility.DButil;
@@ -247,6 +251,218 @@ public class daoImpl implements dao{
 		}
 		return answer;
 	}
+
+	@Override
+	public void editStudentProfile(String sEmail, String nSPassword, String nSName) throws SQLException {
+		dao daoObj = new daoImpl();
+		
+		try(Connection conn = DButil.getConnection()){
+			PreparedStatement ps = conn.prepareStatement("update students set sPassword=?,sName=? where sEmail=?");
+			ps.setString(1,nSPassword);
+			ps.setString(2,nSName);
+			ps.setString(3, sEmail);
+			
+			ps.executeUpdate();
+			System.out.println("Student"+daoObj.getSNameFromEmail(sEmail)+" with Email "+" updated with new password and name");
+		}
+		catch(SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<BatchSeatDTO> getBatchSeatdetails() throws SQLException {
+		List<BatchSeatDTO> listOfBS = new ArrayList<>();
+		BatchSeatDTO bs = null;
+		
+		try(Connection conn = DButil.getConnection()) {
+			PreparedStatement ps = conn.prepareStatement("select * from batchSeats");
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				int bId = rs.getInt("bId");
+				int cId = rs.getInt("cId");
+				int totalSeats = rs.getInt("totalSeats");
+				int SeatsFilled = rs.getInt("SeatsFilled");
+				
+				bs = new BatchSeatDTO(bId,cId,totalSeats,SeatsFilled);
+				listOfBS.add(bs);
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+		return listOfBS;
+	}
+
+	@Override
+	public String getCourseName(int cId) throws SQLException {
+		String cName = null;
+		
+		try(Connection conn = DButil.getConnection()) {
+			PreparedStatement ps = conn.prepareStatement("Select cName from courses where cId = ?");
+			ps.setInt(1,cId);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				cName = rs.getString("cName");
+			}
+		} 
+		catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+		return cName;
+	}
+
+	@Override
+	public void displayCourseAvailableWithOrWithoutSeats(String option) throws SQLException {
+
+		dao daoObj = new daoImpl();
+		List<BatchSeatDTO> listOfBS;
+		try {
+		
+		listOfBS = daoObj.getBatchSeatdetails();
+		int n = listOfBS.size();
+		int[] cIdIndex = new int[n];
+		int[] seatsFilled = new int[n];
+		int[] totalSeats = new int[n];
+		
+		for(int i=0; i<n; i++) {
+			cIdIndex[i] = listOfBS.get(i).getcId();
+			seatsFilled[i] = listOfBS.get(i).getSeatsFilled();
+			totalSeats[i] = listOfBS.get(i).getTotalSeats();
+		}
+		
+		for(int i=0;i<n;i++) {
+			for(int j=i+1; j<n; j++) {
+				if(cIdIndex[i] == cIdIndex[j]) {
+					seatsFilled[i] = seatsFilled[i] + seatsFilled[j];
+					totalSeats[i] = totalSeats[i] +totalSeats[j];
+					totalSeats[j] = 0;
+					
+				}
+			}
+		}
+		
+		if(option.equalsIgnoreCase("includeSeat"))
+		{
+		System.out.println("Course name  |  Seats available");
+
+		for(int i=0; i<n; i++) {
+			if(totalSeats[i] != 0 && (totalSeats[i] != seatsFilled[i]) && cIdIndex[i] > 0)
+			System.out.println(daoObj.getCourseName(cIdIndex[i] ) +" | " + (totalSeats[i] - seatsFilled[i]) );
+		}
+		}
+		
+		else if(option.equalsIgnoreCase("includeslno"))
+		{
+		System.out.println("Sl.no -> Course name");
+		int slno =1;
+		for(int i=0; i<n; i++) {
+			if(totalSeats[i] != 0&& (totalSeats[i] != seatsFilled[i]))
+			{
+				String cName = daoObj.getCourseName(cIdIndex[i]);
+				if(cName!= null) {
+					System.out.println(slno++ +" -> " + cName);
+
+				}
+			}			
+		}
+		}
+		}
+		
+		catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public boolean checkForAdmin() {
+		List<Admin> listOfAdmins = new ArrayList<>();
+		listOfAdmins.add(new Admin("paras","12345"));
+		listOfAdmins.add(new Admin("qwerty","12345"));
+		boolean isPresent = false;
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Login to profile-");
+		System.out.println("Enter your User name:");
+		String aName = sc.next();
+		System.out.println("Enter your password: ");
+		String aPassword = sc.next();
+		
+		Admin ad = new Admin(aName,aPassword);
+		
+		if(listOfAdmins.contains(ad))isPresent=true;
+		return isPresent;
+	}
+
+	@Override
+	public void displayHomePageOptionToUser() {
+		System.out.println();
+		System.out.println();
+		System.out.println("     						Please choose your profile by entering the number below-");
+		System.out.println();
+		System.out.println("     						1. Administrator");
+		System.out.println("     						2. Register in a course as a student");
+		System.out.println("     						3. Login as student");
+		
+	}
+
+	@Override
+	public void displayOptionsForAdmin() {
+		System.out.println();
+		System.out.println("Welcome Admin!");
+		System.out.println();
+		System.out.println("Enter number to perform actions:");
+		System.out.println();
+		System.out.println("1. Add a new Courses");
+		System.out.println("2. Update Fees of course.");	
+		System.out.println("3. Delete  a course from any Training session.");
+		System.out.println("4. Search information about a course.");
+		System.out.println("5. Create Batch under a course.");
+		System.out.println("6. Allocate students in a Batch under a course.");
+		System.out.println("7. Update total seats of a batch.");
+		System.out.println("8. View the students of every batch.");
+		
+	}
+
+	@Override
+	public void adminAddNewCourse() {
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter Course ID:");
+		int cId = sc.nextInt();
+		System.out.println("Enter Course name :");
+		String cName = sc.next();
+		System.out.println("Enter Course fees:");
+		int fees = sc.nextInt();
+		sc.nextLine();
+		System.out.println("Enter course information:");
+		String cInfo = sc.nextLine();
+		
+		try(Connection conn = DButil.getConnection()){
+			
+			PreparedStatement ps = conn.prepareStatement("Insert into courses values (?, ?, ?, ?)");
+			ps.setInt(1, cId);
+			ps.setString(2, cName.toUpperCase());
+			ps.setInt(3, fees);
+			ps.setString(4, cInfo);
+			
+			int x = ps.executeUpdate();
+			
+			System.out.println("Course "+ cName +" inserted into database successfully.");
+
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		catch (InputMismatchException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	
 	
 	
 	
