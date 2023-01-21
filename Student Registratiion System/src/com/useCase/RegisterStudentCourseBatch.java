@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.Model.Student;
+import com.color.ConsoleColors;
 import com.dao.dao;
 import com.dao.daoImpl;
 import com.exceptions.CourseException;
@@ -18,11 +19,11 @@ public class RegisterStudentCourseBatch {
 		String cName = null;
 		
 		try{	
-			System.out.println("Enter your e-mail:");
+			System.out.println(ConsoleColors.ORANGE+"Enter your Email :"+ConsoleColors.RESET);
 			String sEmail = sc.next();
-			System.out.println("Enter your Password:");
+			System.out.println(ConsoleColors.ORANGE+"Enter your Password :"+ConsoleColors.RESET);
 			String sPassword = sc.next();
-			System.out.println("Enter your Name:");
+			System.out.println(ConsoleColors.ORANGE+"Enter your Name :"+ConsoleColors.RESET);
 			String sName = sc.next();				
 			
 			s = new Student(sEmail, sPassword, sName);
@@ -34,17 +35,18 @@ public class RegisterStudentCourseBatch {
 				if(!ans) {
 					daoObj.registerStudent(s);
 					System.out.println();
-					System.out.println("Student "+ sName +" with e-mail "+ sEmail +" registstered successfully");
+					System.out.println(ConsoleColors.GREEN_BACKGROUND+"Student "+ sName +" with e-mail "+ sEmail +" registstered successfully"+ConsoleColors.RESET);
 					System.out.println();
 									
-					System.out.println("Enter yes to join a course. ");
-					System.out.println("Enter no to quit");
+					System.out.println(ConsoleColors.BLUE_BOLD+"Enter yes to join a course. ");
+					System.out.println("Enter no to quit"+ConsoleColors.RESET);
 					String opt = sc.next();
 					
 					if(opt.equalsIgnoreCase("yes")) {
-						System.out.println("List of courses available:");
+						System.out.println(ConsoleColors.ORANGE+"List of courses available :"+ConsoleColors.RESET);
+						System.out.println(ConsoleColors.PURPLE_BRIGHT);
 						daoObj.displayCourseAvailableWithOrWithoutSeats("includeslno");
-
+						System.out.println(ConsoleColors.RESET);
 						System.out.println("Enter the name of the course name you want to join:");
 
 						String sDecision2 = sc.next().toUpperCase();
