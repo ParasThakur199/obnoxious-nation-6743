@@ -59,4 +59,10 @@ public interface dao {
 	public String getStudentPassword (String sEmail) throws StudentException;
 	
 	public void adminUpdateTotalSeatsOfaBatch();
+	
+	public void adminViewStudentsOfEveryBatch();
+	
+	public List<String> getSEmailListFromBatchWhoIsIntoACourse();
+	
+	public String getSNameFromEmail (String sEmail);
 }

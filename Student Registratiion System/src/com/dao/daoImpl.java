@@ -704,10 +704,80 @@ public class daoImpl implements dao{
 		}
 		
 	}
-	
-	
-	
-	
+
+	@Override
+	public void adminViewStudentsOfEveryBatch() {
+		dao daoObj = new daoImpl();
+		try(Connection conn = DButil.getConnection()){
+			PreparedStatement ps = conn.prepareStatement("select batchNo, sEmail from batch order by batchNo");
+			ResultSet rs = ps.executeQuery();
+			boolean isEmpty = true;
+			while(rs.next()) {
+				if(isEmpty)System.out.println("BatchNo. -> Student name");
+				isEmpty = false;
+
+				int batchNo = rs.getInt("batchNo");
+				String sEmail = rs.getString("sEmail");
+				System.out.println(batchNo +" -> "+ daoObj.getSNameFromEmail(sEmail));
+			}
+			if(isEmpty)System.out.println("No students available in a batch (or) no batches available. Please check for these conditions.");
+			else {
+				System.out.println();
+				System.out.println("All batches along with their students displayed.");
+			}
+
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		catch (InputMismatchException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public List<String> getSEmailListFromBatchWhoIsIntoACourse() {
+		List<String> SEmailListFromBatchWhoIsIntoACourse = new ArrayList<>();
+
+		try(Connection conn = DButil.getConnection()){
+
+			PreparedStatement ps = conn.prepareStatement("select sEmail from batch");
+			ResultSet rs= ps.executeQuery();
+			
+			while(rs.next()) {
+				String sEmail = rs.getString("sEmail");
+				SEmailListFromBatchWhoIsIntoACourse.add(sEmail);
+			}
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		return SEmailListFromBatchWhoIsIntoACourse;
+	}
+
+	@Override
+	public String getSNameFromEmail(String sEmail) {
+		String name = null;
+		
+		try(Connection conn = DButil.getConnection()){
+			PreparedStatement ps = conn.prepareStatement("select sName from students where sEmail = ?");
+			ps.setString(1, sEmail);
+			ResultSet rs= ps.executeQuery();
+			
+			if(rs.next()) {
+				name = rs.getString("sName");
+			}
+			else throw new StudentException("Student with e-mail "+ sEmail+" does not exists");
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} catch (StudentException e) {
+			System.out.println(e.getMessage());
+		} 
+		
+		return name;
+	}
 	
 
 }
