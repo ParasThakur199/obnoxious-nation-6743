@@ -3,6 +3,7 @@ package com.clientSide;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import com.color.ConsoleColors;
 import com.dao.dao;
 import com.dao.daoImpl;
 import com.useCase.AdminAddNewCourse;
@@ -22,7 +23,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println();
-		System.out.println("     						Welcome to Automated Student registration system!");
+		System.out.println(ConsoleColors.YELLOW_BACKGROUND_BRIGHT+"   WELCOME TO AUTOMATED STUDENT REGISTRATION SYSTEM !!"+ConsoleColors.RESET);
 //		dao DAO_OBJ = DAO_OBJ;
 
 		Scanner sc = new Scanner(System.in);
@@ -42,7 +43,7 @@ public class Main {
 				
 				switch (aOpt) {
 				case 1: {
-					AdminAddNewCourse a = new AdminAddNewCourse();
+					AdminAddNewCourse a = new AdminAddNewCourse();		
 					break;
 				}
 				case 2: {
@@ -81,7 +82,7 @@ public class Main {
 					throw new IllegalArgumentException("Unexpected value: " + aOpt+ " enter valid options please.");
 				}
 			}
-			else System.out.println("Please enter correct ID and Password!");
+			else System.out.println(ConsoleColors.RED_BACKGROUND_BRIGHT+"Please Enter Correct ID and Password !!"+ConsoleColors.RESET);
 			
 		}
 		

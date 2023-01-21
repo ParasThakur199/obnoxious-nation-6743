@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.color.ConsoleColors;
 import com.dao.dao;
 import com.dao.daoImpl;
 import com.exceptions.CourseException;
@@ -14,9 +15,9 @@ public class LoginStudent {
 	
 	public LoginStudent() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Please Enter your Email :");
+		System.out.println(ConsoleColors.ORANGE+"Please Enter your Email :"+ConsoleColors.RESET);
 		String sEmail = sc.next();
-		System.out.println("Please Enter your Password :");
+		System.out.println(ConsoleColors.ORANGE+"Please Enter your Password :"+ConsoleColors.RESET);
 		String sPassword = sc.next();
 		
 		dao daoObj = new daoImpl();
@@ -24,10 +25,17 @@ public class LoginStudent {
 			boolean isStudentPresent = daoObj.checkForStudent(sEmail, sPassword);
 			
 			if(isStudentPresent) {
-				System.out.println("Welcome "+ daoObj.getSNameFromEmail(sEmail));
-				System.out.println("Please select-");
-				System.out.println("1. Update my details");
-				System.out.println("2. View all available courses and seat availability");
+				System.out.println(ConsoleColors.GREEN_BACKGROUND+"Login Successfully !!"+ConsoleColors.RESET);
+				System.out.println();
+				System.out.println(ConsoleColors.PURPLE_BRIGHT+"+-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=--=-=-=-=-=-=-+");
+				System.out.println("|                                                       |");
+				System.out.println("| Welcome "+ daoObj.getSNameFromEmail(sEmail)+"         |");
+				System.out.println("| Please select-                                        |");
+				System.out.println("| 1. Update my details                                  |");
+				System.out.println("| 2. View all available courses and seat availability   |");
+				System.out.println("|                                                       |");
+				System.out.println("+-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=--=-=-=-=-=-=-+"+ConsoleColors.RESET);
+
 				int opt = sc.nextInt();
 				
 				if(opt == 1) {
@@ -54,7 +62,7 @@ public class LoginStudent {
 						{
 							int cId = daoObj.getCourseId(sNewCourse);
 							daoObj.registerBatch(cId, sNewCourse, sEmail);
-							System.out.println("Student name "+sNewName+ " registered into course "+ sNewCourse);
+							System.out.println(ConsoleColors.GREEN_BOLD+"Student name "+sNewName+ " registered into course "+ sNewCourse+ConsoleColors.RESET);
 						}
 							
 					}
@@ -67,7 +75,7 @@ public class LoginStudent {
 				}
 				
 			}
-			else System.out.println("Student with e-mail "+ sEmail +" does not exists");
+			else System.out.println(ConsoleColors.RED_BACKGROUND_BRIGHT+"Student with e-mail "+ sEmail +" does not exists"+ConsoleColors.RESET);
 			
 		}
 		catch (SQLException e) {
