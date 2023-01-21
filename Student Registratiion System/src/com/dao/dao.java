@@ -43,4 +43,20 @@ public interface dao {
 	public void displayOptionsForAdmin();
 	
 	public void adminAddNewCourse();
+	
+	public void adminUpdateFeesOfCourse (String cName, int fees);
+	
+	public void adminDeleteCourse (String cName);
+	
+	public void adminDisplayCourseInfo (String cName);
+	
+	public void adminCreateBatchunderaCourse (String cName, int bId, int totalSeats );
+	
+	public void adminAllocateStudentsInaBatchUnderaCourse();
+	
+	public List<Student> getListOfStudents();
+	
+	public String getStudentPassword (String sEmail) throws StudentException;
+	
+	public void adminUpdateTotalSeatsOfaBatch();
 }

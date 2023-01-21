@@ -461,6 +461,249 @@ public class daoImpl implements dao{
 		}
 		
 	}
+
+	@Override
+	public void adminUpdateFeesOfCourse(String cName, int fees) {
+		dao daoObj = new daoImpl();
+		
+		try(Connection conn = DButil.getConnection()){
+			int cId = daoObj.getCourseId(cName);
+			PreparedStatement ps = conn.prepareStatement("update courses set fees = ? where cId = ?");
+			ps.setInt(1, fees);
+			ps.setInt(2, cId);
+			ps.executeUpdate();
+			
+			System.out.println("Course "+cName +" is updated with fees "+ fees+".");
+			
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		catch (CourseException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public void adminDeleteCourse(String cName) {
+		dao daoObj = new daoImpl();
+
+		try(Connection conn = DButil.getConnection()){
+			int cId = daoObj.getCourseId(cName);
+
+			PreparedStatement ps2 = conn.prepareStatement("delete from batchSeats where cId = ?");
+			ps2.setInt(1, cId);
+			PreparedStatement ps = conn.prepareStatement("delete from courses where cId = ?");
+			ps.setInt(1, cId);
+			ps2.executeUpdate();
+			ps.executeUpdate();
+			
+			System.out.println(cName + " course deleted successfully.");
+			System.out.println(cName + " deleted in every training session.");
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		catch (CourseException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public void adminDisplayCourseInfo(String cName) {
+		dao daoObj = new daoImpl();
+
+		try(Connection conn = DButil.getConnection()){
+			int cId = daoObj.getCourseId(cName);
+
+			PreparedStatement ps = conn.prepareStatement("select * from courses where cId = ?");
+			ps.setInt(1, cId);
+			ResultSet rs =  ps.executeQuery();
+			
+			if(rs.next()) {
+				int cIdl = rs.getInt("cId");
+				String cNamel = rs.getString("cName");
+				int fees = rs.getInt("fees");
+				String cInfo = rs.getString("cInfo");
+				System.out.println("The course information for course name you asked for-");
+				System.out.println("Course information for "+ cName +" course-");
+				System.out.println("CourseID: "+ cIdl);
+				System.out.println("Course Name: "+ cNamel);
+				System.out.println("Course fee: "+ fees);
+				System.out.println("Course information: "+ cInfo);
+			}
+			
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		catch (CourseException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public void adminCreateBatchunderaCourse(String cName, int bId, int totalSeats) {
+		dao daoObj = new daoImpl();
+		
+		try(Connection conn = DButil.getConnection()){
+			int cId = daoObj.getCourseId(cName);
+			PreparedStatement ps = conn.prepareStatement("insert into batchSeats values (?, ?, ?, ?)");
+			ps.setInt(1, bId);
+			ps.setInt(2, cId);
+			ps.setInt(3, totalSeats);
+			ps.setInt(4, 0);
+			ps.executeUpdate();
+			System.out.println("Batch of batch ID "+ bId +" created under course "+ cName + " with seat capacity of "+ totalSeats);
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} catch (CourseException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public void adminAllocateStudentsInaBatchUnderaCourse() {
+		dao daoObj = new daoImpl();
+		Scanner sc = new Scanner(System.in);
+		
+		try(Connection conn = DButil.getConnection()){
+			List<Student> listOfStudents = daoObj.getListOfStudents();
+			if(listOfStudents.size()==0)System.out.println("No student has enrolled yet.");
+			else {
+				
+				System.out.println("List of students in our institution-");
+				System.out.println();
+				listOfStudents.forEach(s -> System.out.println(s));
+				System.out.println();
+				System.out.println("Process to allocate student under a abatch in a acourse starts.");
+				System.out.println("Enter the Student E-mail: ");
+				String sEmail = sc.next();
+				String sPassword = daoObj.getStudentPassword(sEmail);
+				
+				boolean existence = daoObj.checkForStudent(sEmail, sPassword);
+				
+				if(existence) {
+					System.out.println("Enter course name to allocate into batch othe course:");
+					daoObj.displayCourseAvailableWithOrWithoutSeats("includeslno");
+					String cName = sc.next();
+					int cId = daoObj.getCourseId(cName);
+					
+					daoObj.registerBatch(cId, cName, sEmail);
+					
+				}
+				else throw new StudentException("Student "+ daoObj.getSNameFromEmail(sEmail) +" with e-mail "+ sEmail + " not found");
+				
+			}
+			
+			
+			
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} catch (StudentException e) {
+			System.out.println(e.getMessage());
+		} catch (CourseException e) {
+			System.out.println(e.getMessage());
+		} 
+		catch (InputMismatchException e) {
+			System.out.println(e.getMessage());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+		
+	}
+
+	@Override
+	public List<Student> getListOfStudents() {
+		List<Student> listOfStudents = new ArrayList<>();
+
+		try(Connection conn = DButil.getConnection()){
+			PreparedStatement ps = conn.prepareStatement("select * from students");
+			ResultSet rs = ps.executeQuery();
+
+			while(rs.next()) {
+				String sEmail = rs.getString("sEmail");
+				String sPassword = rs.getString("sPassword");
+				String sName = rs.getString("sName");
+				Student s = new Student(sEmail, sPassword, sName);
+				listOfStudents.add(s);
+			}
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		return listOfStudents;
+		
+	}
+
+	@Override
+	public String getStudentPassword(String sEmail) throws StudentException {
+		dao daoObj = new daoImpl();
+		String answer = null;
+		try(Connection conn = DButil.getConnection()){
+			PreparedStatement ps = conn.prepareStatement("select sPassword from students where sEmail = ?");
+			ps.setString(1, sEmail);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				answer = rs.getString("sPassword"); 
+			}
+			else throw new StudentException("Student "+  daoObj.getSNameFromEmail(sEmail) +" with E-mail "+ sEmail +" does not exists");
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		
+		
+		return answer;
+	}
+
+	@Override
+	public void adminUpdateTotalSeatsOfaBatch() {
+		Scanner sc = new Scanner(System.in);
+		
+		
+		try(Connection conn = DButil.getConnection()){
+			dao daoObj = new daoImpl();
+			
+			List<BatchSeatDTO> listOfBatchSeatDetails = daoObj.getBatchSeatdetails();
+			
+			if(listOfBatchSeatDetails.size()==0) {
+				System.out.println("There are no batches created yet. Please create one to edit it.");
+			}
+			else {
+				System.out.println("Batches available:");
+				listOfBatchSeatDetails.forEach(b -> {
+					System.out.println(b.getbId());
+				});
+				System.out.println();
+				System.out.println("Enter Batch number:");
+				int bId = sc.nextInt();
+				System.out.println("Enter new capacity of seats:");
+				int newTotalSeats = sc.nextInt();
+				PreparedStatement ps = conn.prepareStatement("update batchSeats set totalSeats = ? where bId = ?");
+				ps.setInt(1, newTotalSeats);
+				ps.setInt(2, bId);
+				ps.executeUpdate();
+				System.out.println("BatchID "+ bId +" updated to seat capacity "+newTotalSeats);
+			}
+			
+		}	
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} 
+		catch (InputMismatchException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	
 	
 	
