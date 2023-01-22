@@ -28,8 +28,8 @@ public class LoginStudent {
 				System.out.println(ConsoleColors.GREEN_BACKGROUND+"Login Successfully !!"+ConsoleColors.RESET);
 				System.out.println();
 				System.out.println(ConsoleColors.PURPLE_BRIGHT+"+-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=--=-=-=-=-=-=-+");
+				System.out.println("| Welcome "+ daoObj.getSNameFromEmail(sEmail)+"                                         |");
 				System.out.println("|                                                       |");
-				System.out.println("| Welcome "+ daoObj.getSNameFromEmail(sEmail)+"         |");
 				System.out.println("| Please select-                                        |");
 				System.out.println("| 1. Update my details                                  |");
 				System.out.println("| 2. View all available courses and seat availability   |");
@@ -39,19 +39,19 @@ public class LoginStudent {
 				int opt = sc.nextInt();
 				
 				if(opt == 1) {
-					System.out.println("Enter your new password:");
+					System.out.println(ConsoleColors.ORANGE+"Enter your new password :"+ConsoleColors.RESET);
 					String sNewPassword = sc.next();
 					sc.nextLine();
-					System.out.println("Enter your new name:");
+					System.out.println(ConsoleColors.ORANGE+"Enter your new name :"+ConsoleColors.RESET);
 					String sNewName = sc.nextLine();
 					daoObj.editStudentProfile(sEmail, sNewPassword, sNewName);
 					
-					System.out.println("Enter yes to change course:");
-					System.out.println("Enter no to leave");
+					System.out.println(ConsoleColors.BLUE_BOLD+"Enter yes to change course :");
+					System.out.println("Enter no to leave"+ConsoleColors.RESET);
 					String opt2 = sc.next().toLowerCase();
 					
 					if(opt2.equalsIgnoreCase("yes")) {
-						System.out.println("Enter your new course:");
+						System.out.println(ConsoleColors.ORANGE+"Enter your new course :"+ConsoleColors.RESET);
 						String sNewCourse = sc.next().toUpperCase();
 						List<String>SEmailListFromBatchWhoIsIntoACourse = daoObj.getSEmailListFromBatchWhoIsIntoACourse();
 						

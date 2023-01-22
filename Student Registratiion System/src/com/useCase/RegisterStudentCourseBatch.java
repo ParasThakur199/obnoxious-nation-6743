@@ -51,7 +51,7 @@ public class RegisterStudentCourseBatch {
 
 						String sDecision2 = sc.next().toUpperCase();
 						int cId = daoObj.getCourseId(sDecision2);
-						
+						System.out.println(sDecision2);
 						if(daoObj.checkForCourse(sDecision2)) {
 							daoObj.registerBatch(cId, sDecision2, sEmail);
 						}
@@ -63,7 +63,7 @@ public class RegisterStudentCourseBatch {
 					else throw new CourseException("Have a nice day " +sName +" .");
 					
 				}
-				else System.out.println("student already exists");
+				else System.out.println(ConsoleColors.YELLOW_BACKGROUND+"Student Already Exists"+ConsoleColors.RESET);
 			}
 			catch(StudentException e){
 				System.out.println(e.getMessage());
