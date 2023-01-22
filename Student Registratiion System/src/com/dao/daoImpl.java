@@ -79,17 +79,17 @@ public class daoImpl implements dao{
 				ps3.setInt(2,lbatchId);
 				int x2 = ps3.executeUpdate();
 				
-				PreparedStatement ps2 = conn.prepareStatement("Insert into batch(batchNo, cId, StdEmail) values(?,?,?)");
+				PreparedStatement ps2 = conn.prepareStatement("Insert into batch(batchNo, cId, sEmail) values(?,?,?)");
 				ps2.setInt(1,fbatchId);
 				ps2.setInt(2,cId);
 				ps2.setString(3,sEmail);
 				
 				int x = ps2.executeUpdate();
-				System.out.println("Student"+daoObj.getSNameFromEmail(sEmail)+"with e-mail"+sEmail+"registered into course"+cName);
+				System.out.println(ConsoleColors.GREEN_BACKGROUND+"Student "+daoObj.getSNameFromEmail(sEmail)+" with Email "+sEmail+" registered into course "+cName+ConsoleColors.RESET);
 			}
 		}
 		if(!flag) {
-			throw new CourseException("Seats not available for course"+cName+"batch not allocated for the course yet");
+			throw new CourseException(ConsoleColors.RED_BACKGROUND_BRIGHT+"Seats not available for course"+cName+"batch not allocated for the course yet"+ConsoleColors.RESET);
 		}
 		} 
 		catch (SQLException e) {
@@ -181,7 +181,7 @@ public class daoImpl implements dao{
 			if(rs.next()) {
 				answer = rs.getInt("cId");
 			}else {
-				throw new CourseException("There is no "+cName+"course. Please Enter proper course name.");
+				throw new CourseException(ConsoleColors.YELLOW_BACKGROUND+"There is no "+cName+" course. Please Enter proper course name."+ConsoleColors.RESET);
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e.getMessage());
@@ -264,7 +264,7 @@ public class daoImpl implements dao{
 			ps.setString(3, sEmail);
 			
 			ps.executeUpdate();
-			System.out.println("Student"+daoObj.getSNameFromEmail(sEmail)+" with Email "+" updated with new password and name");
+			System.out.println(ConsoleColors.GREEN_BACKGROUND+"Student "+daoObj.getSNameFromEmail(sEmail)+" with Email "+" updated with new password and name"+ConsoleColors.RESET);
 		}
 		catch(SQLException e) {
 			throw new SQLException(e.getMessage());
@@ -346,11 +346,12 @@ public class daoImpl implements dao{
 		
 		if(option.equalsIgnoreCase("includeSeat"))
 		{
-		System.out.println("Course name  |  Seats available");
+		System.out.println();
+		System.out.println(ConsoleColors.BLUE_BOLD+"Course name  |  Seats available"+ConsoleColors.RESET);
 
 		for(int i=0; i<n; i++) {
 			if(totalSeats[i] != 0 && (totalSeats[i] != seatsFilled[i]) && cIdIndex[i] > 0)
-			System.out.println(daoObj.getCourseName(cIdIndex[i] ) +" | " + (totalSeats[i] - seatsFilled[i]) );
+			System.out.println(daoObj.getCourseName(cIdIndex[i] ) +"         " + (totalSeats[i] - seatsFilled[i]) );
 		}
 		}
 		
