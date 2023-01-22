@@ -79,17 +79,17 @@ public class daoImpl implements dao{
 				ps3.setInt(2,lbatchId);
 				int x2 = ps3.executeUpdate();
 				
-				PreparedStatement ps2 = conn.prepareStatement("Insert into batch(batchNo, cId, StdEmail) values(?,?,?)");
+				PreparedStatement ps2 = conn.prepareStatement("Insert into batch(batchNo, cId, sEmail) values(?,?,?)");
 				ps2.setInt(1,fbatchId);
 				ps2.setInt(2,cId);
 				ps2.setString(3,sEmail);
 				
 				int x = ps2.executeUpdate();
-				System.out.println("Student"+daoObj.getSNameFromEmail(sEmail)+"with e-mail"+sEmail+"registered into course"+cName);
+				System.out.println(ConsoleColors.GREEN_BACKGROUND+"Student "+daoObj.getSNameFromEmail(sEmail)+" with Email "+sEmail+" registered into course "+cName+ConsoleColors.RESET);
 			}
 		}
 		if(!flag) {
-			throw new CourseException("Seats not available for course"+cName+"batch not allocated for the course yet");
+			throw new CourseException(ConsoleColors.RED_BACKGROUND_BRIGHT+"Seats not available for course"+cName+"batch not allocated for the course yet"+ConsoleColors.RESET);
 		}
 		} 
 		catch (SQLException e) {
@@ -181,7 +181,7 @@ public class daoImpl implements dao{
 			if(rs.next()) {
 				answer = rs.getInt("cId");
 			}else {
-				throw new CourseException("There is no "+cName+"course. Please Enter proper course name.");
+				throw new CourseException(ConsoleColors.YELLOW_BACKGROUND+"There is no "+cName+" course. Please Enter proper course name."+ConsoleColors.RESET);
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e.getMessage());
@@ -264,7 +264,7 @@ public class daoImpl implements dao{
 			ps.setString(3, sEmail);
 			
 			ps.executeUpdate();
-			System.out.println("Student"+daoObj.getSNameFromEmail(sEmail)+" with Email "+" updated with new password and name");
+			System.out.println(ConsoleColors.GREEN_BACKGROUND+"Student "+daoObj.getSNameFromEmail(sEmail)+" with Email "+" updated with new password and name"+ConsoleColors.RESET);
 		}
 		catch(SQLException e) {
 			throw new SQLException(e.getMessage());
@@ -346,11 +346,12 @@ public class daoImpl implements dao{
 		
 		if(option.equalsIgnoreCase("includeSeat"))
 		{
-		System.out.println("Course name  |  Seats available");
+		System.out.println();
+		System.out.println(ConsoleColors.BLUE_BOLD+"Course name  |  Seats available"+ConsoleColors.RESET);
 
 		for(int i=0; i<n; i++) {
 			if(totalSeats[i] != 0 && (totalSeats[i] != seatsFilled[i]) && cIdIndex[i] > 0)
-			System.out.println(daoObj.getCourseName(cIdIndex[i] ) +" | " + (totalSeats[i] - seatsFilled[i]) );
+			System.out.println(daoObj.getCourseName(cIdIndex[i] ) +"         " + (totalSeats[i] - seatsFilled[i]) );
 		}
 		}
 		
@@ -454,7 +455,7 @@ public class daoImpl implements dao{
 			
 			int x = ps.executeUpdate();
 			
-			System.out.println("Course "+ cName +" inserted into database successfully.");
+			System.out.println(ConsoleColors.GREEN_BACKGROUND+"Course "+ cName +" inserted into database successfully."+ConsoleColors.RESET);
 
 		}
 		catch (SQLException e) {
@@ -477,7 +478,7 @@ public class daoImpl implements dao{
 			ps.setInt(2, cId);
 			ps.executeUpdate();
 			
-			System.out.println("Course "+cName +" is updated with fees "+ fees+".");
+			System.out.println(ConsoleColors.GREEN_BACKGROUND+"Course "+cName +" is updated with fees "+ fees+"."+ConsoleColors.RESET);
 			
 		}
 		catch (SQLException e) {
@@ -531,15 +532,15 @@ public class daoImpl implements dao{
 				String cNamel = rs.getString("cName");
 				int fees = rs.getInt("fees");
 				String cInfo = rs.getString("cInfo");
-				System.out.println(ConsoleColors.ORANGE+"+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+");
-				System.out.println("|                                                       |");
-				System.out.println("| The course information for course name you asked for- |");
-				System.out.println("| Course information for "+ cName +" course-            |");
-				System.out.println("| CourseID: "+ cIdl+"                                   |");
-				System.out.println("| Course Name: "+ cNamel+"                              |");
-				System.out.println("| Course fee: "+ fees+"                                 |");
-				System.out.println("| Course information: "+ cInfo+"                        |");
-				System.out.println("|                                                       |");
+				System.out.println(ConsoleColors.BLUE+"+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+");
+				System.out.println("                                                       ");
+				System.out.println(" Course Information for "+ cName +" -                    ");
+				System.out.println();
+				System.out.println(" CourseID: "+ cIdl+"                                           ");
+				System.out.println(" Course Name: "+ cNamel+"                                      ");
+				System.out.println(" Course fee: "+ fees+"                                      ");
+				System.out.println(" Course information: "+ cInfo+"                           ");
+				System.out.println("                                                       ");
 				System.out.println("+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+"+ConsoleColors.RESET);
 			}
 			
@@ -565,7 +566,7 @@ public class daoImpl implements dao{
 			ps.setInt(3, totalSeats);
 			ps.setInt(4, 0);
 			ps.executeUpdate();
-			System.out.println("Batch of batch ID "+ bId +" created under course "+ cName + " with seat capacity of "+ totalSeats);
+			System.out.println(ConsoleColors.GREEN_BACKGROUND+"Batch of batch ID "+ bId +" created under course "+ cName + " with seat capacity of "+ totalSeats+ConsoleColors.RESET);
 		}
 		catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -585,19 +586,19 @@ public class daoImpl implements dao{
 			if(listOfStudents.size()==0)System.out.println("No student has enrolled yet.");
 			else {
 				
-				System.out.println("List of students in our institution-");
-				System.out.println();
+				System.out.println(ConsoleColors.ORANGE+"List of students in our Institution-"+ConsoleColors.RESET);
+				System.out.println(ConsoleColors.BLUE);
 				listOfStudents.forEach(s -> System.out.println(s));
-				System.out.println();
-				System.out.println("Process to allocate student under a abatch in a acourse starts.");
-				System.out.println("Enter the Student E-mail: ");
+				System.out.println(ConsoleColors.RESET);
+				System.out.println(ConsoleColors.CYAN_ITALIC+"Process to allocate Student in a Batch Under a course"+ConsoleColors.RESET);
+				System.out.println(ConsoleColors.ORANGE+"Enter the Student E-mail: "+ConsoleColors.RESET);
 				String sEmail = sc.next();
 				String sPassword = daoObj.getStudentPassword(sEmail);
 				
 				boolean existence = daoObj.checkForStudent(sEmail, sPassword);
 				
 				if(existence) {
-					System.out.println("Enter course name to allocate into batch othe course:");
+					System.out.println(ConsoleColors.ORANGE+"Enter course name to allocate into batch othe course:"+ConsoleColors.RESET);
 					daoObj.displayCourseAvailableWithOrWithoutSeats("includeslno");
 					String cName = sc.next();
 					int cId = daoObj.getCourseId(cName);
@@ -721,17 +722,17 @@ public class daoImpl implements dao{
 			ResultSet rs = ps.executeQuery();
 			boolean isEmpty = true;
 			while(rs.next()) {
-				if(isEmpty)System.out.println("BatchNo. -> Student name");
+				if(isEmpty)System.out.println("BatchNo.  |  Student name");
 				isEmpty = false;
 
 				int batchNo = rs.getInt("batchNo");
 				String sEmail = rs.getString("sEmail");
-				System.out.println(batchNo +" -> "+ daoObj.getSNameFromEmail(sEmail));
+				System.out.println(batchNo +"            "+ daoObj.getSNameFromEmail(sEmail));
 			}
-			if(isEmpty)System.out.println("No students available in a batch (or) no batches available. Please check for these conditions.");
+			if(isEmpty)System.out.println(ConsoleColors.RED_BOLD+"No students available in a batch (or) no batches available. Please check for these conditions."+ConsoleColors.RESET);
 			else {
 				System.out.println();
-				System.out.println("All batches along with their students displayed.");
+				System.out.println(ConsoleColors.GREEN_BOLD +"All Batches along with their students displayed."+ConsoleColors.RESET);
 			}
 
 		}
